@@ -1,0 +1,128 @@
+1. Del archivo coli.gff que gene es el mayor y que gene es el menor por posición de inicio.
+
+$ cut -f3,4 coli.gff | grep -w "gene" | tail
+gene	4640942	
+
+$ cut -f3,4 coli.gff | grep -w "gene" | head
+gene	190	
+
+2. Del archivo coli.gff cual es la distancia mas grande entre un gene
+
+$ cut -f3,5 coli.gff | grep -w "gene" | tail
+gene	4641628
+
+3. Del archivo coli.gff cuantos genes están repetidos por posición
+
+$ cut -f3,4,5 coli.gff | grep -w "gene" | sort | uniq | wc -l
+4506
+
+3. Del archivo coli.gff cuantos están en strand forward y cuantos en reverse
+
+$ cut -f7 coli.gff | grep -w "+" | wc -l
+4738
+
+$ cut -f7 coli.gff | grep -w "-" | wc -l
+4786
+
+4. Del archivo mirna_human_ensembl_hg38.txt cual es la distancia promedia entre la posición de inicio y fin
+
+awk -F '\t' '
+NR>1 {
+    distancia=$3-$2
+    sum[$5]+=distancia
+    n[$5]++
+}
+END{
+    printf "Distancia = %.1f\n", sum[1]/n[1]
+}
+' mirna_human_ensembl_hg38.txt
+Distancia = 25.7
+
+5. Del archivo  coli_protein.faa cuantas veces se encuentra el string “MR”
+
+grep -c "MR" coli_protein.faa
+1901
+
+6. Del archivo  coli_protein.faa cuantas veces se encuentra el string “MR” solo al inicio del renglón
+
+grep -c "^MR" coli_protein.faa
+267
+
+7. Del archivo mirna_human_ensembl_hg38.txt reportar el gene id, chromosoma, inicio y fin
+
+$ awk -F '\t' '{print $7, $1, $2, $3}' mirna_human_ensembl_hg38.txt | head
+
+Ensembl gene ID Chromosome/scaffold name Start (bp) End (bp)
+ENSG00000002834 17 38921341 38921364
+ENSG00000003056 12 8943479 8943500
+ENSG00000003436 2 187465861 187465889
+ENSG00000003509 2 37248230 37248253
+ENSG00000004399 3 129555904 129555932
+ENSG00000004455 1 33009078 33009099
+ENSG00000004478 12 2799216 2799237
+ENSG00000004864 7 96121215 96121237
+ENSG00000004864 7 96121241 96121266
+
+8. Crea un script que reciba como parámetros el nombre de archivo, columna de incio, columna fin y que calcular la distancia y saque el promedio de distancias.
+
+awk -F '\t' '
+NR>1 {print $2}' mirna_human_ensembl_hg38.txt > inicio.txt
+
+
+awk -F '\t' '
+NR>1 {print $3}' mirna_human_ensembl_hg38.txt > fin.txt
+
+
+#!/bin/bash
+inicio=$2
+fin=$3
+
+awk -F '\t' '
+NR>1 {
+    distancia=$fin - $inicio
+    sum[$5]+=distancia
+    n[$5]++
+}
+END{
+    printf "Distancia = %.1f\n", sum[1]/n[1]
+}
+' $2 $3
+
+
+#!/bin/bash
+inicio=$(awk -F '\t' '
+NR>1 {print $2}' mirna_human_ensembl_hg38.txt)
+
+fin=$(awk -F '\t' '
+NR>1 {print $3}' mirna_human_ensembl_hg38.txt)
+
+$inicio=$2
+$fin=$3
+
+awk -F '\t' '
+NR>1 {
+    distancia=$fin - $inicio
+    sum[$5]+=distancia
+    n[$5]++
+}
+END{
+    printf "Distancia = %.1f\n", sum[1]/n[1]
+}
+' $2 $3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
