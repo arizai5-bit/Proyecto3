@@ -1,2 +1,2 @@
 # Proyecto3
-Prueba
+Este proyecto es de prueba para la materia de programación 
